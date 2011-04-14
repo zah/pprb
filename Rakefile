@@ -1,18 +1,29 @@
 require 'rubygems'
 require 'rake'
+require './lib/pprb'
 
 begin
   require 'jeweler'
+  
   Jeweler::Tasks.new do |gem|
     gem.name = "pprb"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.authors = ["Zahary Karadjov", "Stefan Dragnev"]
+    gem.summary = "PPRB The little preprocessor that could"
+    gem.description = "PPRB is a code preprocessor and text templating engine with minimalistic syntax and strong emphasis on eliminating any code duplication in template files"
     gem.email = "zahary@gmail.com"
-    gem.homepage = "http://github.com/zah/pprb"
-    gem.authors = ["Zahary Karadjov"]
+    gem.homepage = "http://github.com/zah/pprb"    
+    gem.version = PPRB::Version::STRING
+    
+    gem.executable = 'pprb'
+    
+    gem.files.exclude 'CMake'
+    gem.files.exclude 'VisualStudio'
+    
     gem.add_development_dependency "thoughtbot-shoulda"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_dependency "trollop"    
   end
+  
+  #Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end

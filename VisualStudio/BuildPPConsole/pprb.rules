@@ -1,0 +1,1 @@
+profile '*.cs', :c_parsable, { :ticks => /\b_(.*?)_\b/ }
