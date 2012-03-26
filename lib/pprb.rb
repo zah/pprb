@@ -2,13 +2,15 @@ module PPRB
   module Version
     MAJOR = 0
     MINOR = 9
-    PATCH = 0
+    PATCH = 1
     
     STRING = [MAJOR, MINOR, PATCH].compact.join('.')
   end
   
-  def self.render source
-    PPRB.new(source).run
+  DEFAULT_RULES_FILE = "pprb.rules"
+  
+  def self.render source, rules_file
+    PPRB.new(source, :pp, rules_file).run
   end
 
   def self.compile source
@@ -18,7 +20,7 @@ module PPRB
   class PPRB
     # source is either a File object or a string
     # start_state is either :pp or :rb
-    def initialize source, start_state = :pp
+    def initialize source, start_state = :pp, rules_file = nil
       @source = source
       @path = File.expand_path(source.path) if source.class == File
 
@@ -31,7 +33,8 @@ module PPRB
       @input_state = [start_state]
       @last_emitted = :code
 
-      load_rules
+      load_rules(rules_file ? rules_file : DEFAULT_RULES_FILE)
+      
       source.lines.each { |l| process_line l }
       @ruby_output << ']' if @last_emitted == :text
     end
@@ -154,7 +157,7 @@ module PPRB
 
     def escape_code str
       ruby_snippets = []
-      # we don't want anything escaped withing ruby snippets, so first we move them out
+      # we don't want anything escaped within ruby snippets, so first we move them out
       str.gsub!(@TICKS) { ruby_snippets << $1; "%%#{ruby_snippets.size - 1}" }
       # after escaping what's necessary, we move them back in
       str.gsub('\\', '\\\\\\').gsub(']', '\\]').gsub('[', '\\[').gsub(/%%(\d+)/) { "\#{#{ruby_snippets[ $1.to_i ]}}" }
@@ -184,9 +187,9 @@ module PPRB
       @pprb_include_dirs = dirs.reverse
     end
 
-    def load_rules
+    def load_rules rules_file
       pprb_include_dirs.each do |dir|
-        next unless File.exist?(rules = "#{dir}/pprb.rules")
+        next unless File.exist?(rules = "#{dir}/#{rules_file}")
         open(rules) { |f| run_and_translate_errors(f.read, rules) }
       end
     end
