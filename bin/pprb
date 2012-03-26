@@ -9,6 +9,7 @@ require 'trollop'
 options = Trollop::options do
   banner "PPRB #{PPRB::Version::STRING} usage: pprb source [options]"  
   opt :out, "Output file. Unless supplied prints to STDOUT", :short => 'o', :type => String
+  opt :rules, "Rules file. Default is #{PPRB::DEFAULT_RULES_FILE}", :short => 'r', :type => String
 end
 
 source = ARGV.shift
@@ -16,7 +17,7 @@ source = ARGV.shift
 Trollop::die "Please, provide a source file" unless source
 
 open(source, "r") do |input|
-  target_output = PPRB::render input
+  target_output = PPRB::render input, options.rules
   
   unless options.out
     puts target_output
